@@ -16,7 +16,7 @@ export default function StreakTracker() {
         });
 
         if (response.ok) {
-          const data = await setStreak(data.streak_count || 0);
+          const data = setStreak(data.streak_count || 0);
         }
       } catch (error) {
         console.error("Error fetching streak:", error);
