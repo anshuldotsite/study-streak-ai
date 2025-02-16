@@ -5,12 +5,31 @@ import { useState, useEffect } from "react";
 export default function PomodoroTimer() {
   const [timeLeft, setTimeLeft] = useState(1500);
   const [isActive, setIsActive] = useState(false);
+  const [rewardGiven, setRewardGiven] = useState(false); // Prevents multiple rewards per session
+  const [userEmail, setUserEmail] = useState(null); // State to store user email
+
+  useEffect(() => {
+    const storedEmail = typeof window !== "undefined" ? localStorage.getItem("email") : null;
+    if (storedEmail) {
+      setUserEmail(storedEmail); // Set the email from localStorage
+    } else {
+      console.error("No user email found in localStorage");
+    }
+  }, []);
 
   useEffect(() => {
     let timer;
     if (isActive) {
       timer = setInterval(() => {
-        setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
+        setTimeLeft((prev) => {
+          if (prev === 1) {
+            setIsActive(false);
+            if (!rewardGiven) {
+              giveReward();
+            }
+          }
+          return prev > 0 ? prev - 1 : 0;
+        });
       }, 1000);
     } else {
       clearInterval(timer);
@@ -18,9 +37,31 @@ export default function PomodoroTimer() {
     return () => clearInterval(timer);
   }, [isActive]);
 
+  const giveReward = async () => {
+    if (!userEmail) return; // Ensure email exists before making request
+
+    try {
+      const response = await fetch("/api/rewards", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: userEmail,
+          pointsToAdd: 10,
+        }),
+      });
+
+      
+        alert("🎉 You earned 10 reward points!");
+       
+    } catch (error) {
+      console.error("Error adding rewards:", error);
+    }
+  };
+
   const handleReset = () => {
     setTimeLeft(1500);
     setIsActive(false);
+    setRewardGiven(false); // Reset reward tracking for the next session
   };
 
   return (

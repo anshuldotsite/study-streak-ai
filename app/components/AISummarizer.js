@@ -11,9 +11,9 @@ export default function AISummarizer() {
   const [loading, setLoading] = useState(false);
 
   const boilerplateCommands = [
-    "Summarize this text in 3 sentences.",
-    "Give me bullet points.",
-    "Explain like I'm 5.",
+    { command: "Summarize this text in 3 sentences.", response: "This is a brief summary of the text in 3 sentences." },
+    { command: "Give me bullet points.", response: "• Point 1\n• Point 2\n• Point 3" },
+    { command: "Explain like I'm 5.", response: "Imagine you're telling a 5-year-old about this. Here's how I would explain it simply!" },
   ];
 
   const handleSummarize = async () => {
@@ -23,6 +23,8 @@ export default function AISummarizer() {
     if (file) formData.append("file", file);
 
     try {
+      // Uncomment if AI functionality is working again
+      /*
       const response = await fetch("/api/ai-summary", {
         method: "POST",
         body: formData,
@@ -30,12 +32,22 @@ export default function AISummarizer() {
 
       const data = await response.json();
       setSummary(data.summary || "No summary generated.");
+      */
+
+      // Simulating the AI functionality is not working and returning general summary
+      setSummary("This is a placeholder summary since the AI feature isn't working.");
     } catch (error) {
       console.error("Error:", error);
       setSummary("Error generating summary.");
     } finally {
       setLoading(false);
     }
+  };
+
+  // Handle the boilerplate commands click
+  const handleBoilerplateClick = (response) => {
+    setText(response); // Set the pre-defined response when a boilerplate command is clicked
+    setSummary(response); // Optionally show the pre-defined summary immediately
   };
 
   return (
@@ -51,9 +63,9 @@ export default function AISummarizer() {
           <button
             key={index}
             className="mr-2 mb-2 px-4 py-2 bg-gray-800 text-orange-500 rounded-lg hover:bg-gray-700 transition-all"
-            onClick={() => setText(cmd)}
+            onClick={() => handleBoilerplateClick(cmd.response)}
           >
-            {cmd}
+            {cmd.command}
           </button>
         ))}
       </div>
