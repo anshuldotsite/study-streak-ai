@@ -24,7 +24,9 @@ export default function Sidebar() {
       }
 
       try {
-        const res = await fetch(`/api/auth?email=${encodeURIComponent(storedEmail)}`);
+        const res = await fetch(
+          `/api/auth?email=${encodeURIComponent(storedEmail)}`
+        );
         const data = await res.json();
 
         if (res.ok) {
@@ -60,7 +62,9 @@ export default function Sidebar() {
       >
         <div className="flex flex-col justify-between h-full">
           <div>
-            <h2 className="text-2xl ml-20 font-bold mb-6">Hello, {user ? user.name : "Guest"}!</h2>
+            <h2 className="text-2xl ml-20 font-bold mb-6">
+              Hello, {user ? user.name : "Guest"}!
+            </h2>
 
             <div className="space-y-4">
               {/* Navigation Links */}
@@ -74,7 +78,7 @@ export default function Sidebar() {
                 </a>
 
                 <a
-                  href="/pomodo"
+                  href="/pomodoro"
                   className="flex items-center text-white hover:text-orange-500 transition duration-200"
                 >
                   <Timer className="mr-2" size={20} />
@@ -84,7 +88,6 @@ export default function Sidebar() {
                   href="/rewards"
                   className="flex items-center text-white hover:text-orange-500 transition duration-200"
                 >
-                  
                   Rewards Store
                 </a>
 
@@ -92,7 +95,6 @@ export default function Sidebar() {
                   href="/summariser"
                   className="flex items-center text-white hover:text-orange-500 transition duration-200"
                 >
-                  
                   Ai Summariser
                 </a>
 
@@ -132,8 +134,6 @@ export default function Sidebar() {
               </nav>
             </div>
           </div>
-
-        
         </div>
       </aside>
     </>
