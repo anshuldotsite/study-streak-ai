@@ -1,18 +1,21 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Sidebar from "../components/sidebar1";
 import { Ripple } from "@/components/magicui/ripple";
 
 export default function Rewards() {
   const [rewards, setRewards] = useState([]);
-  const [userRewards, setUserRewards] = useState(0);
-
-  // Get the email from localStorage
-  const storedEmail = typeof window !== "undefined" ? localStorage.getItem("email") : null;
+  const [user, setUser] = useState(null); // Store full user object
+  const [redeemedCoupons, setRedeemedCoupons] = useState({}); // Track redeemed coupons
+  const router = useRouter();
 
   useEffect(() => {
+    const storedEmail = typeof window !== "undefined" ? localStorage.getItem("email") : null;
+
     if (!storedEmail) {
       alert("User not logged in.");
+      router.push("/login");
       return;
     }
 
@@ -26,21 +29,31 @@ export default function Rewards() {
       }
     }
 
-    async function fetchUserRewards() {
+    async function fetchUserProfile() {
       try {
-        const res = await fetch(`/api/user/rewards?email=${storedEmail}`);
+        const res = await fetch(`/api/auth?email=${encodeURIComponent(storedEmail)}`);
         const data = await res.json();
-        setUserRewards(data.points || 0);
-      } catch (error) {
-        console.error("Error fetching user rewards:", error);
+
+        if (res.ok) {
+          setUser(data.user); // Store full user object
+        } else {
+          console.error("Profile Fetch Error:", data.error);
+          localStorage.removeItem("email");
+          router.push("/login");
+        }
+      } catch (err) {
+        console.error("Error fetching profile:", err);
+        localStorage.removeItem("email");
+        router.push("/login");
       }
     }
 
     fetchRewards();
-    fetchUserRewards();
-  }, [storedEmail]);
+    fetchUserProfile();
+  }, [router]);
 
-  const handleRedeem = async (rewardId) => {
+  const handleRedeem = async (rewardId, rewardCost) => {
+    const storedEmail = typeof window !== "undefined" ? localStorage.getItem("email") : null;
     if (!storedEmail) {
       alert("User not logged in.");
       return;
@@ -57,8 +70,17 @@ export default function Rewards() {
       if (data.error) {
         alert(data.error);
       } else {
-        alert(`Redeemed: ${data.coupon}`);
-        setUserRewards((prev) => prev - data.cost);
+        // Store the coupon for the redeemed reward
+        setRedeemedCoupons((prevCoupons) => ({
+          ...prevCoupons,
+          [rewardId]: data.coupon,
+        }));
+
+        // Update user's rewards balance in the UI
+        setUser((prevUser) => ({
+          ...prevUser,
+          rewards: prevUser.rewards - rewardCost,
+        }));
       }
     } catch (error) {
       console.error("Error redeeming reward:", error);
@@ -72,24 +94,32 @@ export default function Rewards() {
 
       <h2 className="text-4xl font-bold text-orange-500 text-center mb-6">Rewards Store</h2>
       <p className="text-center text-orange-500 text-lg">
-        Your Points: <span className="font-semibold">{userRewards}</span>
+        Your Points: <span className="font-semibold">{user?.rewards || 0}</span>
       </p>
       <ul className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {rewards.map((reward) => (
-          <li key={reward.id} className="bg-gray-900 p-6 text-orange-500 rounded-lg shadow-lg">
-            <h3 className="text-xl text-orange-500 font-semibold">{reward.name}</h3>
-            <p className="mt-2">
-              Cost: <span className="font-bold">{reward.cost}</span> points
-            </p>
-            <button
-              className="mt-4 bg-orange-500 text-white py-2 px-4 rounded-md hover:bg-orange-600 transition"
-              onClick={() => handleRedeem(reward.id)}
-              disabled={userRewards < reward.cost}
-            >
-              {userRewards >= reward.cost ? "Redeem" : "Not Enough Points"}
-            </button>
-          </li>
-        ))}
+        {Array.isArray(rewards) && rewards.length > 0 ? (
+          rewards.map((reward) => (
+            <li key={reward.id} className="bg-gray-900 p-6 text-orange-500 rounded-lg shadow-lg">
+              <h3 className="text-xl text-orange-500 font-semibold">{reward.name}</h3>
+              <p className="mt-2">
+                Cost: <span className="font-bold">{reward.cost}</span> points
+              </p>
+              <button
+                className="mt-4 bg-orange-500 text-white py-2 px-4 rounded-md hover:bg-orange-600 transition"
+                onClick={() => handleRedeem(reward.id, reward.cost)}
+                disabled={user?.rewards < reward.cost}
+              >
+                {user?.rewards >= reward.cost ? "Redeem" : "Not Enough Points"}
+              </button>
+              {/* Show coupon if redeemed */}
+              {redeemedCoupons[reward.id] && (
+                <p className="mt-2 text-green-400">Coupon Code: <span className="font-bold">{redeemedCoupons[reward.id]}</span></p>
+              )}
+            </li>
+          ))
+        ) : (
+          <p className="text-center text-gray-400">No rewards available.</p>
+        )}
       </ul>
     </div>
   );

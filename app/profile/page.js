@@ -66,6 +66,12 @@ export default function Profile() {
             </button>
             <button 
               className="w-28 p-2 bg-orange-500 text-white rounded-md hover:bg-Orange-600 transition"
+              onClick={() => router.push("/summariser")}
+            >
+              Ai Chatbot
+            </button>
+            <button 
+              className="w-28 p-2 bg-orange-500 text-white rounded-md hover:bg-Orange-600 transition"
               onClick={() => router.push("/rewards")}
             >
               Rewards Store
