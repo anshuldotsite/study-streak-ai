@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Sidebar from "../components/sidebar1";
+import Sidebar from "../components/sidebar";
 import { Ripple } from "@/components/magicui/ripple";
 
 export default function Rewards() {
@@ -11,7 +11,8 @@ export default function Rewards() {
   const router = useRouter();
 
   useEffect(() => {
-    const storedEmail = typeof window !== "undefined" ? localStorage.getItem("email") : null;
+    const storedEmail =
+      typeof window !== "undefined" ? localStorage.getItem("email") : null;
 
     if (!storedEmail) {
       alert("User not logged in.");
@@ -31,7 +32,9 @@ export default function Rewards() {
 
     async function fetchUserProfile() {
       try {
-        const res = await fetch(`/api/auth?email=${encodeURIComponent(storedEmail)}`);
+        const res = await fetch(
+          `/api/auth?email=${encodeURIComponent(storedEmail)}`
+        );
         const data = await res.json();
 
         if (res.ok) {
@@ -53,7 +56,8 @@ export default function Rewards() {
   }, [router]);
 
   const handleRedeem = async (rewardId, rewardCost) => {
-    const storedEmail = typeof window !== "undefined" ? localStorage.getItem("email") : null;
+    const storedEmail =
+      typeof window !== "undefined" ? localStorage.getItem("email") : null;
     if (!storedEmail) {
       alert("User not logged in.");
       return;
@@ -92,15 +96,22 @@ export default function Rewards() {
       <Ripple />
       <Sidebar />
 
-      <h2 className="text-4xl font-bold text-orange-500 text-center mb-6">Rewards Store</h2>
+      <h2 className="text-4xl font-bold text-orange-500 text-center mb-6">
+        Rewards Store
+      </h2>
       <p className="text-center text-orange-500 text-lg">
         Your Points: <span className="font-semibold">{user?.rewards || 0}</span>
       </p>
       <ul className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {Array.isArray(rewards) && rewards.length > 0 ? (
           rewards.map((reward) => (
-            <li key={reward.id} className="bg-gray-900 p-6 text-orange-500 rounded-lg shadow-lg">
-              <h3 className="text-xl text-orange-500 font-semibold">{reward.name}</h3>
+            <li
+              key={reward.id}
+              className="bg-black p-6 text-orange-500 rounded-lg shadow-lg"
+            >
+              <h3 className="text-xl text-orange-500 font-semibold">
+                {reward.name}
+              </h3>
               <p className="mt-2">
                 Cost: <span className="font-bold">{reward.cost}</span> points
               </p>
@@ -113,7 +124,12 @@ export default function Rewards() {
               </button>
               {/* Show coupon if redeemed */}
               {redeemedCoupons[reward.id] && (
-                <p className="mt-2 text-green-400">Coupon Code: <span className="font-bold">{redeemedCoupons[reward.id]}</span></p>
+                <p className="mt-2 text-green-400">
+                  Coupon Code:{" "}
+                  <span className="font-bold">
+                    {redeemedCoupons[reward.id]}
+                  </span>
+                </p>
               )}
             </li>
           ))

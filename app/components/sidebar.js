@@ -1,16 +1,58 @@
 "use client";
 
-import { useState } from "react";
-import { Menu } from "lucide-react";
-import StreakTracker from "../components/streakTracker";
-import Leaderboard from "../components/leaderboard";
+import { useState, useEffect } from "react";
+import {
+  Menu,
+  LogIn,
+  LogOut,
+  User,
+  Timer,
+  Settings,
+  Award,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [user, setUser] = useState(null);
+  const [error, setError] = useState(null);
+  const router = useRouter();
 
-  const toggleSidebar = () => {
-    setIsOpen(!isOpen);
-  };
+  // Toggle sidebar visibility
+  const toggleSidebar = () => setIsOpen(!isOpen);
+
+  // Fetch user profile
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const storedEmail = localStorage.getItem("email");
+
+      if (!storedEmail) {
+        router.push("/login");
+        return;
+      }
+
+      try {
+        const res = await fetch(
+          `/api/auth?email=${encodeURIComponent(storedEmail)}`
+        );
+        const data = await res.json();
+
+        if (res.ok) {
+          setUser(data.user);
+        } else {
+          setError(data.error);
+          localStorage.removeItem("email");
+          router.push("/login");
+        }
+      } catch (err) {
+        setError("Failed to load profile.");
+      }
+    };
+
+    fetchProfile();
+  }, [router]);
+
+  if (error) return <p className="text-red-500 text-center mt-4">{error}</p>;
 
   return (
     <>
@@ -26,9 +68,81 @@ export default function Sidebar() {
           isOpen ? "translate-x-0" : "-translate-x-80"
         }`}
       >
-        <h2 className="text-2xl font-bold mt-12 mb-4">Your Progress:</h2>
-        <StreakTracker />
-        <Leaderboard />
+        <div className="flex flex-col justify-between h-full">
+          <div>
+            <span className="flex flex-row text-2xl ml-20 font-bold mb-6">
+              Hello, {user ? user.name : "Guest"}!
+            </span>
+
+            <div className="space-y-4">
+              <nav className="space-y-4">
+                <a
+                  href="/profile"
+                  className="flex items-center font-semibold text-xl text-white hover:text-orange-500 transition duration-200"
+                >
+                  <User className="mr-2" size={20} />
+                  Profile
+                </a>
+
+                <a
+                  href="/pomodoro"
+                  className="flex items-center font-semibold text-xl  text-white hover:text-orange-500 transition duration-200"
+                >
+                  <Timer className="mr-2" size={20} />
+                  Pomodoro Tracker
+                </a>
+                <a
+                  href="/rewards"
+                  className="flex items-center font-semibold text-xl text-white hover:text-orange-500 transition duration-200"
+                >
+                  <Award className="mr-2" size={20} />
+                  Rewards Store
+                </a>
+
+                <a
+                  href="/summariser"
+                  className="flex items-center font-semibold text-xl text-white hover:text-orange-500 transition duration-200"
+                >
+                  AI Summariser
+                </a>
+
+                {user ? (
+                  <>
+                    <a
+                      href="#"
+                      className="flex items-center font-semibold text-xl text-white hover:text-orange-500 transition duration-200"
+                      onClick={() => {
+                        localStorage.removeItem("email");
+                        router.push("/login");
+                      }}
+                    >
+                      <LogOut className="mr-2" size={20} />
+                      Logout
+                    </a>
+                  </>
+                ) : (
+                  <>
+                    <a
+                      href="/login"
+                      className="flex items-center text-white hover:text-orange-500 transition duration-200"
+                    >
+                      <LogIn className="mr-2" size={20} />
+                      Login
+                    </a>
+
+                    <a
+                      href="/register"
+                      className="flex items-center text-white hover:text-orange-500 transition duration-200"
+                    >
+                      <Settings className="mr-2" size={20} />
+                      Register
+                    </a>
+                  </>
+                )}
+              </nav>
+            </div>
+          </div>
+        </div>
       </aside>
     </>
   );
