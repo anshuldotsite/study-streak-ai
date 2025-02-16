@@ -16,8 +16,7 @@ export default function StreakTracker() {
         });
 
         if (response.ok) {
-          const data = await response.json();
-          setStreak(data.streak_count || 0);
+          const data = setStreak(data.streak_count || 0);
         }
       } catch (error) {
         console.error("Error fetching streak:", error);
@@ -28,10 +27,9 @@ export default function StreakTracker() {
   }, []);
 
   return (
-    <div className="p-4 border rounded-md shadow-md">
-      <h2 className="text-xl font-bold">
-        🔥 Your Current Streak: {streak} Days
-      </h2>
+    <div className="flex flex-row bg-black text-white text-xl font-semibold gap-x-10">
+      <span>Your Current Streak</span>
+      <span>🔥 {streak}</span>
     </div>
   );
 }
