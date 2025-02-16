@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect } from "react";
 
 export default function Leaderboard() {
@@ -23,18 +22,17 @@ export default function Leaderboard() {
   }, []);
 
   return (
-    <div className="p-4 border rounded-md shadow-md">
-      <h2 className="text-xl font-bold mb-4">Leaderboard 🏆</h2>
+    <div className="flex flex-col bg-black rounded-lg mt-8">
+      <h2 className="text-xl font-bold mb-4">Leaderboard</h2>
       {loading ? (
         <p>Loading leaderboard...</p>
       ) : leaders.length > 0 ? (
-        <ul>
+        <ul className="text-lg font-semibold">
           {leaders.map((user, index) => (
-            <li key={user.id} className="py-2 border-b">
-              <span className="font-semibold">
-                {index + 1}. {user.name}
-              </span>{" "}
-              - 🔥 {user.streak_count} day streak
+            <li key={user.id} className="py-2 flex items-center">
+              <span className="font-semibold mr-2">{index + 1}.</span>
+              <span className="mr-4">{user.name}</span>
+              <span className="ml-auto">🔥 {user.streak_count}</span>
             </li>
           ))}
         </ul>

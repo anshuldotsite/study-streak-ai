@@ -9,7 +9,9 @@ export default function PomodoroTimer() {
   useEffect(() => {
     let timer;
     if (isActive) {
-      timer = setInterval(() => setTimeLeft((prev) => prev - 1), 1000);
+      timer = setInterval(() => {
+        setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
+      }, 1000);
     } else {
       clearInterval(timer);
     }
@@ -22,22 +24,22 @@ export default function PomodoroTimer() {
   };
 
   return (
-    <div className="flex flex-col items-center mt-28">
+    <div className="flex flex-col items-center mb-56">
       <div className="flex flex-col items-center gap-2">
-        <h1 className="text-6xl font-bold mb-4">
+        <h1 className="text-7xl font-bold mb-6">
           {Math.floor(timeLeft / 60)}:
           {(timeLeft % 60).toString().padStart(2, "0")}
         </h1>
         <button
-          className={`px-2 py-3 text-2xl font-bold transition-all rounded-2xl ${
+          className={`px-2 py-3 text-2xl font-bold rounded-2xl ${
             isActive ? "bg-red-500" : "bg-orange-600"
           }`}
           onClick={() => setIsActive(!isActive)}
         >
-          {isActive ? "Pause" : "Complete a pomodoro to win a reward!!"}
+          {isActive ? "Pause" : "Finish a pomodoro, get a reward!"}
         </button>
         <button
-          className="mt-4 px-4 py-2 text-xl font-semibold rounded-2xl  bg-gray-600 hover:bg-gray-700 transition-all"
+          className="mt-8 px-4 py-2 text-2xl font-semibold rounded-2xl bg-gray-600"
           onClick={handleReset}
         >
           Reset Timer
