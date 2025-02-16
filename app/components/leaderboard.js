@@ -22,13 +22,13 @@ export default function Leaderboard() {
   }, []);
 
   return (
-    <div className="flex flex-col bg-black rounded-lg mt-8">
-      <h2 className="text-xl font-bold mb-4">Leaderboard</h2>
+    <div className="flex flex-col bg-black rounded-lg space-y-6">
+      <h2 className="text-xl font-semibold">Leaderboard</h2>
       {loading ? (
         <p>Loading leaderboard...</p>
       ) : leaders.length > 0 ? (
         <ul className="text-lg font-semibold">
-          {leaders.map((user, index) => (
+          {leaders.slice(0, 5).map((user, index) => (
             <li key={user.id} className="py-2 flex items-center">
               <span className="font-semibold mr-2">{index + 1}.</span>
               <span className="mr-4">{user.name}</span>
