@@ -1,3 +1,5 @@
+"use server";
+
 import PomodoroTimer from "../components/pomodoroTimer";
 import Sidebar from "../components/sidebar";
 import { Ripple } from "@/components/magicui/ripple";
