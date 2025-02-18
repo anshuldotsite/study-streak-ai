@@ -1,4 +1,4 @@
-"use server";
+"use client";
 
 import PomodoroTimer from "../components/pomodoroTimer";
 import Sidebar from "../components/sidebar";
