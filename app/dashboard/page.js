@@ -4,7 +4,7 @@ import PomodoroTimer from "../components/pomodoroTimer";
 import Sidebar from "../components/sidebar";
 import { Ripple } from "@/components/magicui/ripple";
 
-export function Dashboard() {
+export default function Dashboard() {
   return (
     <div className="flex flex-col bg-black min-h-screen text-white justify-center items-center">
       <Sidebar />
